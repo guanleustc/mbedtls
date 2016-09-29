@@ -25,6 +25,10 @@
 #include MBEDTLS_CONFIG_FILE
 #endif
 
+#define MBEDTLS_SSL_DEBUG_BUF_GL( level, text, buf, len )           \
+    mbedtls_debug_print_buf( &ssl, level, __FILE__, __LINE__, text, buf, len )
+
+
 #if defined(MBEDTLS_PLATFORM_C)
 #include "mbedtls/platform.h"
 #else
@@ -798,6 +802,7 @@ int main( int argc, char *argv[] )
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
+	mbedtls_ssl_session *session;
 #if defined(MBEDTLS_TIMING_C)
     mbedtls_timing_delay_context timer;
 #endif
@@ -2163,6 +2168,8 @@ data_exchange:
         ret = 0;
     }
 
+
+
     /*
      * 7a. Request renegotiation while client is waiting for input from us.
      * (only on the first exchange, to be able to test retransmission)
@@ -2170,6 +2177,10 @@ data_exchange:
 #if defined(MBEDTLS_SSL_RENEGOTIATION)
     if( opt.renegotiate && exchanges_left == opt.exchanges )
     {
+	session = ssl.session;
+	MBEDTLS_SSL_DEBUG_BUF_GL( 1, "before renegotiate master secret", session->master, 48 );
+	MBEDTLS_SSL_DEBUG_BUF_GL( 1, "before renegotiate id", session->id, 32 );
+
         mbedtls_printf( "  . Requestion renegotiation..." );
         fflush( stdout );
 
@@ -2184,6 +2195,9 @@ data_exchange:
         }
 
         mbedtls_printf( " ok\n" );
+	session = ssl.session;
+	MBEDTLS_SSL_DEBUG_BUF_GL( 1, "after renegotiate master secret", session->master, 48 );
+	MBEDTLS_SSL_DEBUG_BUF_GL( 1, "after renegotiate id", session->id, 32 );
     }
 #endif /* MBEDTLS_SSL_RENEGOTIATION */
 

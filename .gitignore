@@ -26,3 +26,6 @@ massif-*
 
 #mac debug info
 *.dSYM
+
+#ctags
+tags

@@ -1,0 +1,1 @@
+debug_level=1 renegotiation=1 renegotiate=1 force_ciphersuite=TLS-RSA-WITH-AES-128-CBC-SHA
